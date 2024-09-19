@@ -1,19 +1,22 @@
 const express = require('express'); // Import express
 const app = express(); // Initialize the app instance
+app.use(express.json()); // Add this middleware to parse incoming JSON requests
 
-// Add this middleware to parse incoming JSON requests
-app.use(express.json()); 
 
-const port = process.env.PORT || 3000;
+const port = 3000;
+const mysql = require('mysql2');
+const axios = require('axios');
 
-// Start the server
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Server is running on http://0.0.0.0:${port}`);
+app.listen(port, '', () => {
+    console.log(`Server is running on http://0.0.0.0:${port}`);
 });
 
-// Define your routes here
+
+// Webhook verification
 app.get('/webhook', (req, res) => {
-  const verifyToken = 'theGenie'; // Define your verify token
+    console.log("inside get");
+    res.sendStatus(200);
+     const verifyToken = 'theGenie'; // Choose your verify token
 
   const mode = req.query['hub.mode'];
   const token = req.query['hub.verify_token'];
@@ -24,6 +27,24 @@ app.get('/webhook', (req, res) => {
   } else {
     res.sendStatus(403); // Verification failed
   }
+    
 });
 
-// You can add more routes as needed
+// Webhook to receive WhatsApp messages
+app.post('/webhook', (req, res) => {
+  const message = req.body;
+
+  console.log('Incoming WhatsApp message:', message);
+
+  // Process the incoming message
+  if (message.entry && message.entry[0].changes && message.entry[0].changes[0].value.messages) {
+    const phoneNumber = message.entry[0].changes[0].value.messages[0].from;
+    const textMessage = message.entry[0].changes[0].value.messages[0].text.body;
+
+    console.log(`Received message from ${phoneNumber}: ${textMessage}`);
+
+    // Process the message here, e.g., trigger your /getVendors endpoint
+  }
+
+  res.sendStatus(200); // Respond to WhatsApp with success
+});
