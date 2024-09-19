@@ -1,16 +1,7 @@
 const express = require('express'); // Import express
 const app = express(); // Initialize the app instance
 app.use(express.json()); // Add this middleware to parse incoming JSON requests
-
-
-const port = 3000;
-const mysql = require('mysql2');
 const axios = require('axios');
-
-app.listen(port, '', () => {
-    console.log(`Server is running on http://0.0.0.0:${port}`);
-});
-
 
 // Webhook verification
 app.get('/webhook', (req, res) => {
